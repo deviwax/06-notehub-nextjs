@@ -22,7 +22,7 @@ export default function NoteItem({ note }: Props) {
 
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this note?')) {
-            mutate(note.id);
+            mutate(Number(note.id));
         }
     };
 

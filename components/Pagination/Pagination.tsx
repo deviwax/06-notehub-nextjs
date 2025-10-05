@@ -1,29 +1,51 @@
 'use client';
 
-import styles from './Pagination.module.css';
-
-interface Props {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
-export default function Pagination({ currentPage, totalPages, onPageChange }: Props) {
-    return (
-        <div className={styles.pagination}>
-            <button onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1} className={styles.button}>
-                Previous
-            </button>
+export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+  if (totalPages <= 1) return null;
 
-            <span className={styles.pageInfo}>
-                Page {currentPage} of {totalPages}
-            </span>
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-            <button onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages} className={styles.button}>
-                Next
+  return (
+    <nav aria-label="Pagination">
+      <ul style={{ display: 'flex', gap: '8px', listStyle: 'none', padding: 0 }}>
+        <li>
+          <button
+            aria-label="Previous page"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+        </li>
+
+        {pages.map((p) => (
+          <li key={p}>
+            <button
+              aria-label={`Go to page ${p}`}
+              onClick={() => onPageChange(p)}
+              disabled={p === currentPage}
+            >
+              {p}
             </button>
-        </div>
-    );
+          </li>
+        ))}
+
+        <li>
+          <button
+            aria-label="Next page"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
 }

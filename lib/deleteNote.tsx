@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://notehub.webdev.goit.global/api/';
+const BASE_URL = 'https://next-docs-9f0504b0a741.herokuapp.com/';
 const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
 export async function deleteNote(id: number): Promise<void> {

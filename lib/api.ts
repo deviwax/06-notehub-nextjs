@@ -1,25 +1,38 @@
 import axios from 'axios';
 import { Note } from '@/types/note';
 
-const BASE_URL = 'https://next-docs-9f0504b0a741.herokuapp.com/';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const token = process.env.NEXT_PUBLIC_API_TOKEN;
 
-const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
+export interface NotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
 
-export async function fetchNotes(): Promise <Note[]> {
-    const response = await axios.get(`${BASE_URL}notes`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    console.log('fetchNotes response:', response.data);
-    return response.data.notes;
+export async function fetchNotes(page: number = 1, search: string = ''): Promise<NotesResponse> {
+  const response = await axios.get<NotesResponse>(`${API_URL}/notes`, {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { page, search },
+  });
+  return response.data;
 }
 
 export async function fetchNoteById(id: string): Promise<Note> {
-    const response = await axios.get<Note>(`${BASE_URL}notes/${id}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.data;
+  const response = await axios.get<Note>(`${API_URL}/notes/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+}
+
+export async function createNote(note: { title: string; content?: string; tag: string }): Promise<Note> {
+  const response = await axios.post<Note>(`${API_URL}/notes`, note, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+}
+
+export async function deleteNote(id: string): Promise<void> {
+  await axios.delete(`${API_URL}/notes/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }

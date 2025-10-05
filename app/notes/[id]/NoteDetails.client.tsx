@@ -13,7 +13,8 @@ interface Props {
 export default function NoteDetailsClient({ id }: Props) {
   const { data: note, isLoading, isError } = useQuery<Note>({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id),
+      queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
   });
 
   const [formattedDate, setFormattedDate] = useState<string | null>(null);

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Note } from "@/types/note";
 
-const BASE_URL = 'https://next-docs-9f0504b0a741.herokuapp.com/';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
 export interface NewNote {
@@ -10,7 +10,7 @@ export interface NewNote {
 }
 
 export async function createNote(newNote: NewNote): Promise<Note> {
-    const response = await axios.post<Note>(`${BASE_URL}notes`, newNote, {
+    const response = await axios.post<Note>(`${API_URL}/notes.`, newNote, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

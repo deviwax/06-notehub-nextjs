@@ -9,6 +9,12 @@ export interface NotesResponse {
   totalPages: number;
 }
 
+export interface NewNote {
+  title: string;
+  content: string;
+  tag: string;
+}
+
 export async function fetchNotes(page: number = 1, search: string = ''): Promise<NotesResponse> {
   const response = await axios.get<NotesResponse>(`${API_URL}/notes`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -24,15 +30,24 @@ export async function fetchNoteById(id: string): Promise<Note> {
   return response.data;
 }
 
-export async function createNote(note: { title: string; content?: string; tag: string }): Promise<Note> {
-  const response = await axios.post<Note>(`${API_URL}/notes`, note, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
+export async function createNote(newNote: NewNote): Promise<Note> {
+    try {
+        const response = await axios.post<Note>(`${API_URL}/notes`, newNote, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to create note:', error);
+        throw error;
+    }
 }
 
-export async function deleteNote(id: string): Promise<void> {
-  await axios.delete(`${API_URL}/notes/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export async function deleteNote(id: string): Promise<Note> {
+        const response = await axios.delete<Note>(`${API_URL}/notes/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return response.data;
 }

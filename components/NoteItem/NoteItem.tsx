@@ -1,41 +1,34 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteNote } from '@/lib/deleteNote';
-import { Note } from '@/types/note';
 import Link from 'next/link';
+import { Note } from '@/types/note';
 import styles from '../NoteList/NoteList.module.css';
 
 interface Props {
-    note: Note;
+  note: Note;
+  onDelete: (id: string) => void;
+  isDeleting?: boolean;
 }
 
-export default function NoteItem({ note }: Props) {
-    const queryClient = useQueryClient();
+export default function NoteItem({ note, onDelete, isDeleting }: Props) {
+  return (
+    <div className={styles.listItem}>
+      <h3 className={styles.title}>{note.title}</h3>
+      <p className={styles.content}>{note.content}</p>
+      {note.tag && <span className={styles.tag}>{note.tag}</span>}
 
-    const { mutate, isPending } = useMutation({
-        mutationFn: deleteNote,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes'] });
-        },
-    });
-
-    const handleDelete = () => {
-        if (confirm('Are you sure you want to delete this note?')) {
-            mutate(Number(note.id));
-        }
-    };
-
-    return (
-        <div className={styles.listItem}>
-            <h3>{note.title}</h3>
-            <p>{note.content}</p>
-            <div className={styles.footer}>
-                <Link href={`/notes/${note.id}`} className={styles.link}>View details</Link>
-                <button onClick={handleDelete} disabled={isPending} className={styles.button}>
-                    {isPending ? 'Deleting...' : 'Delete'}
-                </button>
-            </div>
-        </div>
-    );
+      <div className={styles.footer}>
+        <Link href={`/notes/${note.id}`} className={styles.link}>
+          View details
+        </Link>
+        <button
+          onClick={() => onDelete(note.id)}
+          disabled={isDeleting}
+          className={styles.button}
+        >
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </button>
+      </div>
+    </div>
+  );
 }

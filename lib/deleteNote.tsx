@@ -1,12 +1,14 @@
 import axios from 'axios';
+import { Note } from '@/types/note';
 
-const BASE_URL = 'https://next-docs-9f0504b0a741.herokuapp.com/';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
-export async function deleteNote(id: number): Promise<void> {
-    await axios.delete(`${BASE_URL}notes/${id}`, {
+export async function deleteNote(id: string): Promise<Note> {
+    const response = await axios.delete <Note>(`${API_URL}/notes.${id}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     });
+    return response.data;
 }

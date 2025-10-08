@@ -47,17 +47,20 @@ export default function NotesClient() {
         <button onClick={openModal}>+ Add Note</button>
       </div>
 
-      <NoteList notes={notes} />
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
-
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <NoteForm onClose={closeModal} />
-      </Modal>
+          <NoteList notes={notes} />
+          
+          {totalPages > 1 && (
+              <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+              />
+          )}
+          {isModalOpen && (
+              <Modal isOpen={isModalOpen} onClose={closeModal}>
+                  <NoteForm onClose={closeModal} />
+              </Modal>
+          )}
     </>
   );
 }

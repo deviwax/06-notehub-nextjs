@@ -1,26 +1,19 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchNotes } from '@/lib/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteNote } from '@/lib/api';
 import NoteItem from '../NoteItem/NoteItem';
 import { Note } from '@/types/note';
 import styles from './NoteList.module.css';
 
 interface NoteListProps {
-  notes?: Note[];
+  notes: Note[];
 }
 
 export default function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['notes'],
-    queryFn: () => fetchNotes().then(res => res.notes),
-    enabled: !notes,
-  });
-
-  const notesToRender = notes || data;
+  const notesToRender = notes;
 
   const { mutate, isPending: isDeleting } = useMutation({
     mutationFn: deleteNote,
@@ -35,8 +28,6 @@ export default function NoteList({ notes }: NoteListProps) {
     }
   };
 
-  if (isLoading) return <p>Loading notes...</p>;
-  if (isError) return <p>Error loading notes.</p>;
   if (!notesToRender || notesToRender.length === 0) return <p>No notes found.</p>;
 
   return (

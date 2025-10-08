@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Note } from '@/types/note';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const token = process.env.NEXT_PUBLIC_API_TOKEN;
+const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
 export interface NotesResponse {
   notes: Note[];
@@ -37,6 +37,7 @@ export async function createNote(newNote: NewNote): Promise<Note> {
                 Authorization: `Bearer ${token}`,
             },
         });
+        console.log('Response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Failed to create note:', error);

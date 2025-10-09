@@ -1,7 +1,7 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { fetchNotes } from '@/lib/api';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { fetchNotes, NotesResponse } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import NoteList from '@/components/NoteList/NoteList';
 import SearchBox from '@/components/SearchBox/SearchBox';
@@ -11,31 +11,36 @@ import Pagination from '@/components/Pagination/Pagination';
 import { Note } from '@/types/note';
 
 export default function NotesClient() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-      setCurrentPage(1);
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [searchQuery]);
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setCurrentPage(1);
+        }, 500);
+        return () => clearTimeout(timeout);
+    }, [searchQuery]);
 
-  const notesQuery = useQuery({
+    const {
+        data,
+        isLoading,
+        isError,
+        error
+    } = useQuery<NotesResponse, Error>({
     queryKey: ['notes', currentPage, debouncedSearch],
     queryFn: () => fetchNotes(currentPage, debouncedSearch),
-    refetchOnMount: false,
+      refetchOnMount: false,
+      placeholderData: keepPreviousData,
   });
 
-  const data = notesQuery.data;
   const notes: Note[] = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 1;
 
-  if (notesQuery.isLoading) return <p>Loading, please wait...</p>;
-  if (notesQuery.isError) return <p>Something went wrong: {(notesQuery.error as Error).message}</p>;
+  if (isLoading) return <p>Loading, please wait...</p>;
+  if (isError) return <p>Something went wrong: {(error as Error).message}</p>;
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
